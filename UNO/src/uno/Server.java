@@ -35,11 +35,11 @@ public class Server {
                 String name = input.readUTF();
 
                 ServerUI.instance.log("Conexión aceptada: " + name);
-                turn++;
+                
                 Flow flow = new Flow(clientSocket, name);
                 Player newPlayer = new Player(name, flow,turn);
                 players.add(newPlayer);
-
+                turn++;
                 ServerUI.instance.addPlayer(name); 
                 flow.start(); 
             }

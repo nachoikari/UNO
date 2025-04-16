@@ -42,19 +42,23 @@ public class Flow extends Thread {
                String parts[] = message.split(":");
                switch(parts[0]){
                    case "PLAY":
-                       String color = parts[1];
-                       String value = parts[2];
-                       //String playerName, String color, String value
-                       GameHandler.handlePlay(playerName, color, value);
+                        String color = parts[1];       // Ej: "BLACK"
+                        String value = parts[2];       // Ej: "WILD"
+                        String chosenColor = parts.length == 4 ? parts[3] : null;
+
+                        GameHandler.handlePlay(playerName, color, value, chosenColor);
                        break;
                     case "DRAW":
-                        
+                        GameHandler.handleDraw(playerName, this);
                         break;
                     case "UNO":
                         // GameHandler.handleUno(...)
                         break;
                     case "EXIT":
                         // cerrar conexión
+                        break;
+                    case "PASS":
+                        
                         break;
                     default:
                         sendMessage("Comando no reconocido.");
