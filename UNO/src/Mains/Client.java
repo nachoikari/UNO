@@ -1,8 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package uno;
+package Mains;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -19,14 +15,15 @@ import java.util.Scanner;
 public class Client {
     public static void main(String[] args) {
         try {
+            //Establecer conexion al server
             Socket socket = new Socket("localhost", 8000);
             DataOutputStream out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-
             Scanner scanner = new Scanner(System.in);
-
+            //registro del nombre Usuario
             System.out.print("Ingrese su nombre: ");
             String name = scanner.nextLine();
+            //Recibir el nombre y comunicarlo
             out.writeUTF(name);
             out.flush();
 
@@ -35,10 +32,10 @@ public class Client {
                 try {
                     while (true) {
                         String serverMessage = in.readUTF();
-                        System.out.println("📨 Servidor: " + serverMessage);
+                        System.out.println(serverMessage);
                     }
                 } catch (IOException e) {
-                    System.out.println("Conexión cerrada.");
+                    System.out.println("La conexión con el servidor ha sido cerrada.");
                 }
             }).start();
 
