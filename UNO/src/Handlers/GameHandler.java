@@ -9,6 +9,9 @@ import Mains.Server;
 /**
  *
  * @author Isaac
+ * La clase GameHandler implementa la lógica del juego, manejando los turnos de los jugadores, 
+ * las cartas que se juegan, las cartas que se roban, y las reglas del juego, 
+ * tales como el uso de cartas especiales y comodines
  */
 public class GameHandler {
 
@@ -98,51 +101,6 @@ public class GameHandler {
 
             return "OK";
         }
-
-//    public static boolean handlePlay(String playerName, String color, String value, String chosenColor) {
-//        System.out.println(playerName + " lanza la carta: " + color + " " + value);
-//
-//        Player player = getPlayerByName(playerName);
-//        if (!isMyturn(player)) {
-//            return false;
-//        }
-//        Card playedCard = player.getCard(color, value);
-//
-//        if (playedCard == null) {
-//            System.out.println("El jugador no tiene esa carta.");
-//            return false;
-//        }
-//
-//        if (!canPlayThisCard(playedCard, chosenColor)) {
-//            System.out.println("No se puede jugar esa carta");
-//            return false;
-//        }
-//
-//        //La carta existe y se puede jugar
-//        int category = whichIsTheCardtype(playedCard); //1: Numerica, 2: Especial, 3: Comodin
-//        switch (category) {
-//            case 1:
-//                handleNumericCard(playedCard, player);
-//                break;
-//            case 2:
-//                handleSpecialCard(playedCard, player);
-//                break;
-//            case 3:
-//                handleWildCard(playedCard, player);
-//                actualColor = chosenColor;
-//                // Notificar a todos que el color cambió
-//                ClientHandler.broadcast("COLOR_CHANGED_TO: " + chosenColor);
-//                break;
-//            default:
-//                System.out.println("Mi loco, imposible :0 - GameHandler/handlePlay");
-//                break;
-//        }
-//
-//        if (player.getHand().isEmpty()) {
-//            ClientHandler.broadcast("WINNER: " + player.getName());
-//        }
-//        return true;
-//    }
 
     private static int whichIsTheCardtype(Card card) {
         String values[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "SKIP", "REVERSE", "+2", "WILD", "+4"};

@@ -3,6 +3,10 @@ package Clases;
 /**
  *
  * @author Joseph
+ * 
+ * Representa una carta del juego, con un color y un valor.
+ * Esta clase proporciona métodos para acceder a las propiedades de la carta,
+ * así como para obtener una descripción de la carta.
  */
 
 public class Card {

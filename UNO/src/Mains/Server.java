@@ -16,6 +16,8 @@ import java.util.concurrent.Executors;
 /**
  *
  * @author Joseph
+ * La clase Server se encarga de la gestión de las conexiones de los jugadores
+ * y del servidor que maneja el juego.
  */
 public class Server {
 

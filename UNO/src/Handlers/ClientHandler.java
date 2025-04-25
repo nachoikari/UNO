@@ -16,6 +16,9 @@ import java.util.Collections;
 /**
  *
  * @author Isaac
+ * Esta clase se encarga de manejar la comunicación con un cliente en el servidor.
+ * Cada instancia de esta clase es ejecutada en un hilo separado para permitir la interacción simultánea con múltiples clientes.
+ * Proporciona métodos para recibir y enviar mensajes, así como para manejar los comandos del jugador en el juego.
  */
 public class ClientHandler extends Thread {
 
@@ -34,7 +37,10 @@ public class ClientHandler extends Thread {
             System.out.println("Error al inicializar flujos para " + playerName + ": " + e.getMessage());
         }
     }
-
+    /**
+     * Método que ejecuta el hilo para manejar las interacciones con el cliente.
+     * Lee los mensajes del cliente y ejecuta las acciones correspondientes a los comandos enviados.
+     */
     @Override
     public void run() {
         sendMessage("Hola " + playerName);

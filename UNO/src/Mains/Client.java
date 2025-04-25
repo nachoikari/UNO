@@ -11,6 +11,9 @@ import java.util.Scanner;
 /**
  *
  * @author Isaac
+ * El código de esta clase Client establece la conexión entre el cliente y el servidor,
+ * permite que el usuario se conecte, envíe mensajes al servidor y reciba respuestas
+ * de manera concurrente.
  */
 public class Client {
     public static void main(String[] args) {

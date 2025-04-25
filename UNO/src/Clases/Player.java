@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author Isaac
+ * Esta clase contiene información sobre nombre, mano de cartas, la conexión del cliente (Jugador),
+ * y su turno en el juego. También proporciona métodos para gestionar su mano de cartas
+ * y la interacción con el servidor.
  */
 public class Player {
 
