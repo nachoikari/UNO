@@ -92,5 +92,12 @@ public class Server {
             System.out.println("Error al manejar al jugador: " + e.getMessage());
         }
     }
+    
+        public static void removePlayer(String name) {
+        synchronized (players) {
+            players.removeIf(p -> p.getName().equals(name));
+        }
+    }
+
 
 }

@@ -1,1 +1,5 @@
 /UNO/dist/
+*.class
+/build/
+/dist/
+/nbproject/private/

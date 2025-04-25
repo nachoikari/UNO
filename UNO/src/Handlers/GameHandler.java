@@ -8,7 +8,7 @@ import Mains.Server;
 
 /**
  *
- * @author Isaac 🔁
+ * @author Isaac
  */
 public class GameHandler {
 
@@ -56,51 +56,93 @@ public class GameHandler {
         }
         return true;
     }
+    
+    public static String handlePlay(String playerName, String color, String value, String chosenColor) {
+            System.out.println(playerName + " lanza la carta: " + color + " " + value);
 
-    public static boolean handlePlay(String playerName, String color, String value, String chosenColor) {
-        System.out.println(playerName + " lanza la carta: " + color + " " + value);
+            Player player = getPlayerByName(playerName);
+            if (!isMyturn(player)) {
+                return "No es tu turno.";
+            }
 
-        Player player = getPlayerByName(playerName);
-        if (!isMyturn(player)) {
-            return false;
+            Card playedCard = player.getCard(color, value);
+            if (playedCard == null) {
+                return "No tienes esa carta.";
+            }
+
+            if (!canPlayThisCard(playedCard, chosenColor)) {
+                return "No se puede jugar esa carta sobre la actual.";
+            }
+
+            // La carta existe y se puede jugar
+            int category = whichIsTheCardtype(playedCard); // 1: Numérica, 2: Especial, 3: Comodín
+            switch (category) {
+                case 1:
+                    handleNumericCard(playedCard, player);
+                    break;
+                case 2:
+                    handleSpecialCard(playedCard, player);
+                    break;
+                case 3:
+                    handleWildCard(playedCard, player);
+                    actualColor = chosenColor;
+                    ClientHandler.broadcast("COLOR_CHANGED_TO: " + chosenColor);
+                    break;
+                default:
+                    return "Error interno: tipo de carta desconocido.";
+            }
+
+            if (player.getHand().isEmpty()) {
+                ClientHandler.broadcast("WINNER: " + player.getName());
+            }
+
+            return "OK";
         }
-        Card playedCard = player.getCard(color, value);
 
-        if (playedCard == null) {
-            System.out.println("El jugador no tiene esa carta.");
-            return false;
-        }
-
-        if (!canPlayThisCard(playedCard, chosenColor)) {
-            System.out.println("No se puede jugar esa carta");
-            return false;
-        }
-
-        //La carta existe y se puede jugar
-        int category = whichIsTheCardtype(playedCard); //1: Numerica, 2: Especial, 3: Comodin
-        switch (category) {
-            case 1:
-                handleNumericCard(playedCard, player);
-                break;
-            case 2:
-                handleSpecialCard(playedCard, player);
-                break;
-            case 3:
-                handleWildCard(playedCard, player);
-                actualColor = chosenColor;
-                // Notificar a todos que el color cambió
-                ClientHandler.broadcast("COLOR_CHANGED_TO: " + chosenColor);
-                break;
-            default:
-                System.out.println("Mi loco, imposible :0 - GameHandler/handlePlay");
-                break;
-        }
-
-        if (player.getHand().isEmpty()) {
-            ClientHandler.broadcast("WINNER: " + player.getName());
-        }
-        return true;
-    }
+//    public static boolean handlePlay(String playerName, String color, String value, String chosenColor) {
+//        System.out.println(playerName + " lanza la carta: " + color + " " + value);
+//
+//        Player player = getPlayerByName(playerName);
+//        if (!isMyturn(player)) {
+//            return false;
+//        }
+//        Card playedCard = player.getCard(color, value);
+//
+//        if (playedCard == null) {
+//            System.out.println("El jugador no tiene esa carta.");
+//            return false;
+//        }
+//
+//        if (!canPlayThisCard(playedCard, chosenColor)) {
+//            System.out.println("No se puede jugar esa carta");
+//            return false;
+//        }
+//
+//        //La carta existe y se puede jugar
+//        int category = whichIsTheCardtype(playedCard); //1: Numerica, 2: Especial, 3: Comodin
+//        switch (category) {
+//            case 1:
+//                handleNumericCard(playedCard, player);
+//                break;
+//            case 2:
+//                handleSpecialCard(playedCard, player);
+//                break;
+//            case 3:
+//                handleWildCard(playedCard, player);
+//                actualColor = chosenColor;
+//                // Notificar a todos que el color cambió
+//                ClientHandler.broadcast("COLOR_CHANGED_TO: " + chosenColor);
+//                break;
+//            default:
+//                System.out.println("Mi loco, imposible :0 - GameHandler/handlePlay");
+//                break;
+//        }
+//
+//        if (player.getHand().isEmpty()) {
+//            ClientHandler.broadcast("WINNER: " + player.getName());
+//        }
+//        return true;
+//    }
 
     private static int whichIsTheCardtype(Card card) {
         String values[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "SKIP", "REVERSE", "+2", "WILD", "+4"};
@@ -299,25 +341,47 @@ public class GameHandler {
         }
     }
 
-    private static void drawCards(Player player, int quantityCards) {
+    private static void checkAndRefillDeck() {
+        if (deck.isEmpty()) {
+            // Guardamos la carta superior actual para que no se recicle
+            Card topCard = discardStack.pop();
+
+            while (!discardStack.isEmpty()) {
+                deck.push(discardStack.pop());
+            }
+
+            Collections.shuffle(deck);
+           
+            discardStack.push(topCard);// Volvemos a poner la carta superior
+        }
+    }
+
+    private static void drawCards(Player player, int quantityCards) { 
         for (int i = 1; i <= quantityCards; i++) {
-            player.insertCard(deck.pop());
+            checkAndRefillDeck();
+            if (!deck.isEmpty()) {
+                player.insertCard(deck.pop());
+            } else {
+                System.out.println("No hay cartas suficientes para robar.");
+            }
         }
     }
 
     public static void handleDraw(String playerName, ClientHandler connection) {
         Player player = getPlayerByName(playerName);
-        if (player == null) {
+        if (player == null|| !isMyturn(player)) {
             return;
         }
-        if (!isMyturn(player)) {
-            return;
-        }
+        checkAndRefillDeck(); // Verificamos el mazo
 
-        Card card = deck.pop();
-        player.insertCard(card);
-        String mensaje = "DREW: " + card.getDescripcion();
-        connection.sendMessage(mensaje);
+       if (!deck.isEmpty()) {
+            Card card = deck.pop();
+            player.insertCard(card);
+            String mensaje = "DREW: " + card.getDescripcion();
+            connection.sendMessage(mensaje);
+        } else {
+            connection.sendMessage("No hay más cartas para robar.");
+        }
     }
 
     public static void rewriteHand(String playerName, ClientHandler connection) {
